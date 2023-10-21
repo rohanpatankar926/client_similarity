@@ -1,0 +1,8 @@
+langchain==0.0.313
+nltk
+pdfminer
+uvicorn
+fastapi
+streamlit
+numpy
+scikit-learn

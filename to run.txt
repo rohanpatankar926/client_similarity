@@ -1,0 +1,6 @@
+api execution
+uvicorn api:app
+
+
+ui execution
+python -m streamlit run streamlit_ui.py
