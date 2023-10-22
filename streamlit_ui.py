@@ -5,10 +5,26 @@ import shutil
 from langchain.document_loaders import PyPDFLoader
 
 
-def main(doc1, doc2, distance_to_calculate):
-    file1 = PyPDFLoader(doc1)
-    file2 = PyPDFLoader(doc2)
-    file1, file2 = file1.load(), file2.load()
+def main(doc1: str, doc2: str, distance_to_calculate: str):
+    if doc1.split(".")[-1] == "pdf" and doc2.split(".")[-1] == "pdf":
+        file1 = PyPDFLoader(doc1)
+        file2 = PyPDFLoader(doc2)
+        file1_, file2_ = file1.load(), file2.load()
+        file1 = "".join([doc.page_content for doc in file1_])
+        file2 = "".join([doc.page_content for doc in file2_])
+    elif doc1.split(".")[-1] == "txt" and doc2.split(".")[-1] == "pdf":
+        file1 = open(doc1, "r", encoding="utf-8").read()
+        file2 = PyPDFLoader(doc2)
+        file2_ = file2.load()
+        file2 = "".join([doc.page_content for doc in file2_])
+    elif doc1.split(".")[-1] == "pdf" and doc2.split(".")[-1] == "txt":
+        file2 = open(doc2, "r", encoding="utf-8").read()
+        file1 = PyPDFLoader(doc1)
+        file1_ = file1.load()
+        file1 = "".join([doc.page_content for doc in file1_])
+    else:
+        file1 = open(doc1, "r", encoding="utf-8").read()
+        file2 = open(doc2, "r", encoding="utf-8").read()
     if distance_to_calculate == "cosine":
         output = cosine_similarity_(file1, file2)
         if output == 1.0:
@@ -66,8 +82,8 @@ def streamlit_main():
     st.title("Document Similarity Checker")
 
     st.sidebar.header("Upload Documents")
-    doc1 = st.sidebar.file_uploader("Upload First Document", type=["pdf"])
-    doc2 = st.sidebar.file_uploader("Upload Second Document", type=["pdf"])
+    doc1 = st.sidebar.file_uploader("Upload First Document", type=["pdf", "txt"])
+    doc2 = st.sidebar.file_uploader("Upload Second Document", type=["pdf", "txt"])
     distance_to_calculate = st.sidebar.selectbox(
         "Select Distance Calculation Method",
         [

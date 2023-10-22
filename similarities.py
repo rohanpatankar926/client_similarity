@@ -8,9 +8,7 @@ import numpy as np
 import math
 
 
-def cosine_similarity_(file1, file2):
-    doc1 = "".join([doc.page_content for doc in file1])
-    doc2 = "".join([doc.page_content for doc in file2])
+def cosine_similarity_(doc1, doc2):
     tokens1 = np.array(word_tokenize(doc1))
     tokens2 = np.array(word_tokenize(doc2))
     lemmatizer = WordNetLemmatizer()
@@ -25,10 +23,7 @@ def cosine_similarity_(file1, file2):
     return similarity[0][0]
 
 
-def get_bleu_score(file1, file2):
-    reference, candidate = [doc.page_content for doc in file1], [
-        doc.page_content for doc in file2
-    ]
+def get_bleu_score(reference, candidate):
     bleu = bleu_score.sentence_bleu([reference], candidate)
     return bleu
 
@@ -51,21 +46,15 @@ def levenshtein_distance(s1, s2):
 
 
 def get_levenshtein_similarity(doc1, doc2):
-    file1, file2 = "".join([doc.page_content for doc in doc1]), "".join(
-        [doc.page_content for doc in doc2]
-    )
-    distance = levenshtein_distance(file1, file2)
-    max_length = max(len(file1), len(file2))
+    distance = levenshtein_distance(doc1, doc2)
+    max_length = max(len(doc1), len(doc2))
     similarity = 1 - (distance / max_length)
     return similarity
 
 
 def get_jaccard_similarity(doc1, doc2):
-    file1, file2 = "".join([doc.page_content for doc in doc1]), "".join(
-        [doc.page_content for doc in doc2]
-    )
-    set1 = set(file1.lower().split())
-    set2 = set(file2.lower().split())
+    set1 = set(doc1.lower().split())
+    set2 = set(doc2.lower().split())
     intersection = len(set1.intersection(set2))
     union = len(set1) + len(set2) - intersection
     similarity = intersection / union
@@ -82,11 +71,8 @@ def euclidean_distance(vec1, vec2):
 
 
 def get_euclidean_similarity(doc1, doc2):
-    file1, file2 = "".join([doc.page_content for doc in doc1]), "".join(
-        [doc.page_content for doc in doc2]
-    )
-    tokens1 = file1.lower().split()
-    tokens2 = file2.lower().split()
+    tokens1 = doc1.lower().split()
+    tokens2 = doc2.lower().split()
     vocabulary = list(set(tokens1 + tokens2))
     vec1 = [tokens1.count(word) for word in vocabulary]
     vec2 = [tokens2.count(word) for word in vocabulary]
@@ -94,22 +80,16 @@ def get_euclidean_similarity(doc1, doc2):
 
 
 def get_dice_coefficient(doc1, doc2):
-    file1, file2 = "".join([doc.page_content for doc in doc1]), "".join(
-        [doc.page_content for doc in doc2]
-    )
-    set1 = set(file1.lower().split())
-    set2 = set(file2.lower().split())
+    set1 = set(doc1.lower().split())
+    set2 = set(doc2.lower().split())
     intersection = len(set1.intersection(set2))
     dice_coeff = 2 * intersection / (len(set1) + len(set2))
     return dice_coeff
 
 
 def get_word_error_rate(doc1, doc2):
-    file1, file2 = "".join([doc.page_content for doc in doc1]), "".join(
-        [doc.page_content for doc in doc2]
-    )
-    reference = file1.lower().split()
-    hypothesis = file2.lower().split()
+    reference = doc1.lower().split()
+    hypothesis = doc2.lower().split()
     dp = [[0] * (len(hypothesis) + 1) for _ in range(len(reference) + 1)]
 
     for i in range(len(reference) + 1):

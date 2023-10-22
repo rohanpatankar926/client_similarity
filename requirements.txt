@@ -6,3 +6,5 @@ fastapi
 streamlit
 numpy
 scikit-learn
+pypdf
+python-multipart
