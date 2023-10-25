@@ -87,29 +87,12 @@ def get_dice_coefficient(doc1, doc2):
     return dice_coeff
 
 
-def get_word_error_rate(doc1, doc2):
-    reference = doc1.lower().split()
-    hypothesis = doc2.lower().split()
-    dp = [[0] * (len(hypothesis) + 1) for _ in range(len(reference) + 1)]
-
-    for i in range(len(reference) + 1):
-        dp[i][0] = i
-
-    for j in range(len(hypothesis) + 1):
-        dp[0][j] = j
-
-    for i in range(1, len(reference) + 1):
-        for j in range(1, len(hypothesis) + 1):
-            if reference[i - 1] == hypothesis[j - 1]:
-                cost = 0
-            else:
-                cost = 1
-
-            dp[i][j] = min(
-                dp[i - 1][j] + 1,  # Deletion
-                dp[i][j - 1] + 1,  # Insertion
-                dp[i - 1][j - 1] + cost,  # Substitution
-            )
-
-    wer = dp[-1][-1] / len(reference) * 100  # Calculate WER as a percentage
-    return wer
+def get_word_error_rate(reference, hypothesis):
+	ref_words = reference.split()
+	hyp_words = hypothesis.split()
+	substitutions = sum(1 for ref, hyp in zip(ref_words, hyp_words) if ref != hyp)
+	deletions = len(ref_words) - len(hyp_words)
+	insertions = len(hyp_words) - len(ref_words)
+	total_words = len(ref_words)
+	wer = (substitutions + deletions + insertions) / total_words
+	return wer
